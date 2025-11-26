@@ -1,0 +1,81 @@
+/* Japanese Localization */
+
+/* Permissions */
+"permission_required" = "権限が必要です";
+"permission_description" = "ClipPilotはキーボードショートカットの監視とアプリケーションへのペーストを行うため、アクセシビリティ権限が必要です。\n\n以下の場所でClipPilotを有効にしてください:\nシステム環境設定 > セキュリティとプライバシー > プライバシー > アクセシビリティ";
+"open_settings" = "設定を開く";
+"later" = "後で";
+
+/* Search */
+"search_placeholder" = "クリップボード履歴を検索...";
+"all" = "すべて";
+"text" = "テキスト";
+"rtf" = "RTF";
+"image" = "画像";
+"favorites" = "お気に入り";
+"no_items" = "クリップボード項目はまだありません";
+"items" = "件";
+
+/* Actions */
+"paste" = "ペースト";
+"copy" = "クリップボードにコピー";
+"pin" = "ピン留め";
+"unpin" = "ピン留め解除";
+"add_to_favorites" = "お気に入りに追加";
+"remove_from_favorites" = "お気に入りから削除";
+"delete" = "削除";
+"close" = "閉じる";
+"cancel" = "キャンセル";
+"add" = "追加";
+
+/* Clear */
+"clear_all" = "すべて消去";
+"clear_unpinned" = "未ピン項目を消去";
+"clear_history" = "履歴を消去";
+"clear_confirmation" = "クリップボード履歴を消去しますか？";
+"clear_description" = "クリップボード履歴から項目が削除されます。ピン留めされた項目は保持できます。";
+
+/* Menu Bar */
+"recent_items" = "最近の項目";
+"show_all" = "すべての項目を表示";
+"settings" = "設定";
+"quit" = "ClipPilotを終了";
+
+/* Settings - General */
+"general" = "一般";
+"launch_at_login" = "ログイン時に起動";
+"global_shortcut" = "グローバルショートカット";
+"permissions" = "権限";
+"open_accessibility_settings" = "アクセシビリティ設定を開く";
+"energy_optimization" = "エネルギー最適化";
+"energy_optimization_description" = "バッテリー状態とアクティビティに基づいて監視頻度を自動調整";
+
+/* Settings - History */
+"history" = "履歴";
+"max_history_items" = "最大履歴件数";
+"max_history_days" = "最大保存日数";
+"max_text_length" = "最大テキスト長";
+"max_image_size" = "最大画像サイズ";
+
+/* Settings - Exclusions */
+"exclusions" = "除外";
+"excluded_apps_description" = "これらのアプリケーションがアクティブな場合、クリップボード監視が無効になります:";
+"bundle_identifier" = "バンドル識別子 (例: com.apple.Safari)";
+"common_exclusions" = "一般的なパスワードマネージャー:";
+
+/* Settings - About */
+"about" = "について";
+"about_description" = "macOS用の強力なクリップボードマネージャーです。クリップボード履歴の追跡、検索、再利用を支援します。";
+
+/* Item Types */
+"image_item" = "[画像]";
+
+/* Favorites */
+"no_favorites" = "お気に入りはまだありません";
+"switch_favorites" = "お気に入りを切り替え";
+
+/* Time */
+"just_now" = "たった今";
+"minutes_ago" = "分前";
+"hours_ago" = "時間前";
+"days_ago" = "日前";

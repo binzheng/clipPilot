@@ -1,0 +1,81 @@
+/* English Localization */
+
+/* Permissions */
+"permission_required" = "Permission Required";
+"permission_description" = "ClipPilot needs Accessibility permission to monitor keyboard shortcuts and paste content into applications.\n\nPlease enable ClipPilot in:\nSystem Preferences > Security & Privacy > Privacy > Accessibility";
+"open_settings" = "Open Settings";
+"later" = "Later";
+
+/* Search */
+"search_placeholder" = "Search clipboard history...";
+"all" = "All";
+"text" = "Text";
+"rtf" = "RTF";
+"image" = "Image";
+"favorites" = "Favorites";
+"no_items" = "No clipboard items yet";
+"items" = "items";
+
+/* Actions */
+"paste" = "Paste";
+"copy" = "Copy to Clipboard";
+"pin" = "Pin";
+"unpin" = "Unpin";
+"add_to_favorites" = "Add to Favorites";
+"remove_from_favorites" = "Remove from Favorites";
+"delete" = "Delete";
+"close" = "Close";
+"cancel" = "Cancel";
+"add" = "Add";
+
+/* Clear */
+"clear_all" = "Clear All";
+"clear_unpinned" = "Clear Unpinned";
+"clear_history" = "Clear History";
+"clear_confirmation" = "Clear Clipboard History?";
+"clear_description" = "This will remove items from your clipboard history. Pinned items can be preserved.";
+
+/* Menu Bar */
+"recent_items" = "Recent Items";
+"show_all" = "Show All Items";
+"settings" = "Settings";
+"quit" = "Quit ClipPilot";
+
+/* Settings - General */
+"general" = "General";
+"launch_at_login" = "Launch at Login";
+"global_shortcut" = "Global Shortcut";
+"permissions" = "Permissions";
+"open_accessibility_settings" = "Open Accessibility Settings";
+"energy_optimization" = "Energy Optimization";
+"energy_optimization_description" = "Automatically adjust monitoring frequency based on battery status and activity";
+
+/* Settings - History */
+"history" = "History";
+"max_history_items" = "Maximum History Items";
+"max_history_days" = "Maximum History Days";
+"max_text_length" = "Maximum Text Length";
+"max_image_size" = "Maximum Image Size";
+
+/* Settings - Exclusions */
+"exclusions" = "Exclusions";
+"excluded_apps_description" = "Clipboard monitoring will be disabled when these applications are active:";
+"bundle_identifier" = "Bundle Identifier (e.g., com.apple.Safari)";
+"common_exclusions" = "Common password managers:";
+
+/* Settings - About */
+"about" = "About";
+"about_description" = "A powerful clipboard manager for macOS that helps you track, search, and reuse your clipboard history.";
+
+/* Item Types */
+"image_item" = "[Image]";
+
+/* Favorites */
+"no_favorites" = "No favorites yet";
+"switch_favorites" = "Switch favorites";
+
+/* Time */
+"just_now" = "Just now";
+"minutes_ago" = "minutes ago";
+"hours_ago" = "hours ago";
+"days_ago" = "days ago";
