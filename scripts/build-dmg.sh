@@ -42,9 +42,10 @@ mkdir -p "${APP_BUNDLE}/Contents/Resources"
 # バイナリをコピー
 cp "ClipPilot/${BUILD_DIR}/${APP_NAME}" "${APP_BUNDLE}/Contents/MacOS/"
 
-# Info.plistをコピー
+# Info.plistをコピーして変数を置換
 if [ -f "ClipPilot/Info.plist" ]; then
-    cp "ClipPilot/Info.plist" "${APP_BUNDLE}/Contents/"
+    # Info.plistの変数を実際の値に置換
+    sed "s/\$(EXECUTABLE_NAME)/${APP_NAME}/g" "ClipPilot/Info.plist" > "${APP_BUNDLE}/Contents/Info.plist"
 else
     # Info.plistが存在しない場合は作成
     cat > "${APP_BUNDLE}/Contents/Info.plist" << EOF
@@ -72,7 +73,11 @@ else
     <string>13.0</string>
     <key>LSUIElement</key>
     <false/>
+    <key>LSApplicationCategoryType</key>
+    <string>public.app-category.productivity</string>
     <key>NSHighResolutionCapable</key>
+    <true/>
+    <key>NSSupportsAutomaticGraphicsSwitching</key>
     <true/>
 </dict>
 </plist>
@@ -89,7 +94,11 @@ chmod +x "${APP_BUNDLE}/Contents/MacOS/${APP_NAME}"
 
 # コード署名（アドホック署名）
 echo -e "\n${YELLOW}コード署名中...${NC}"
-codesign --force --deep --sign - "${APP_BUNDLE}"
+if [ -f "ClipPilot/entitlements.plist" ]; then
+    codesign --force --deep --sign - --entitlements "ClipPilot/entitlements.plist" --options runtime "${APP_BUNDLE}"
+else
+    codesign --force --deep --sign - --options runtime "${APP_BUNDLE}"
+fi
 
 # 署名の検証
 echo -e "${YELLOW}署名を検証中...${NC}"

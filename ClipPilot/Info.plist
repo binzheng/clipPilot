@@ -22,11 +22,17 @@
     <string>13.0</string>
     <key>LSUIElement</key>
     <false/>
+    <key>LSApplicationCategoryType</key>
+    <string>public.app-category.productivity</string>
     <key>NSHumanReadableCopyright</key>
     <string>Copyright © 2024. All rights reserved.</string>
     <key>NSMainStoryboardFile</key>
     <string></string>
     <key>NSPrincipalClass</key>
     <string>NSApplication</string>
+    <key>NSHighResolutionCapable</key>
+    <true/>
+    <key>NSSupportsAutomaticGraphicsSwitching</key>
+    <true/>
 </dict>
 </plist>
