@@ -87,6 +87,14 @@ fi
 # 実行権限を付与
 chmod +x "${APP_BUNDLE}/Contents/MacOS/${APP_NAME}"
 
+# コード署名（アドホック署名）
+echo -e "\n${YELLOW}コード署名中...${NC}"
+codesign --force --deep --sign - "${APP_BUNDLE}"
+
+# 署名の検証
+echo -e "${YELLOW}署名を検証中...${NC}"
+codesign --verify --verbose "${APP_BUNDLE}" && echo -e "${GREEN}✓ 署名検証成功${NC}"
+
 echo -e "${GREEN}✓ .appバンドル作成完了${NC}"
 
 # DMG作成
