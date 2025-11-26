@@ -71,7 +71,7 @@ else
     <key>LSMinimumSystemVersion</key>
     <string>13.0</string>
     <key>LSUIElement</key>
-    <true/>
+    <false/>
     <key>NSHighResolutionCapable</key>
     <true/>
 </dict>
@@ -107,14 +107,52 @@ cp -r "${APP_BUNDLE}" "${TEMP_DMG_DIR}/"
 # Applicationsフォルダへのシンボリックリンクを作成
 ln -s /Applications "${TEMP_DMG_DIR}/Applications"
 
-# DMGを作成
+# 読み書き可能なDMGを一時的に作成
+TEMP_DMG="temp-${DMG_NAME}"
 hdiutil create -volname "${APP_NAME}" \
     -srcfolder "${TEMP_DMG_DIR}" \
-    -ov -format UDZO \
-    "${DMG_NAME}"
+    -ov -format UDRW \
+    "${TEMP_DMG}"
 
-# クリーンアップ
+# DMGをマウント
+echo -e "${YELLOW}DMGレイアウトを設定中...${NC}"
+MOUNT_DIR="/Volumes/${APP_NAME}"
+hdiutil attach "${TEMP_DMG}" -readwrite -noverify -noautoopen
+
+# AppleScriptでウィンドウレイアウトを設定
+sleep 2
+osascript <<EOF
+tell application "Finder"
+    tell disk "${APP_NAME}"
+        open
+        set current view of container window to icon view
+        set toolbar visible of container window to false
+        set statusbar visible of container window to false
+        set the bounds of container window to {400, 100, 920, 480}
+        set viewOptions to the icon view options of container window
+        set arrangement of viewOptions to not arranged
+        set icon size of viewOptions to 72
+        set position of item "${APP_BUNDLE}" of container window to {140, 180}
+        set position of item "Applications" of container window to {380, 180}
+        close
+        open
+        update without registering applications
+        delay 2
+    end tell
+end tell
+EOF
+
+# DMGをデタッチ
+sync
+hdiutil detach "${MOUNT_DIR}"
+
+# 圧縮されたDMGに変換
+echo -e "${YELLOW}DMGを圧縮中...${NC}"
+hdiutil convert "${TEMP_DMG}" -format UDZO -o "${DMG_NAME}"
+
+# 一時ファイルをクリーンアップ
 rm -rf "${TEMP_DMG_DIR}"
+rm -f "${TEMP_DMG}"
 
 echo -e "\n${GREEN}=====================================${NC}"
 echo -e "${GREEN}✓ ビルド完了！${NC}"
