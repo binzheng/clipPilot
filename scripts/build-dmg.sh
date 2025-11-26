@@ -1,0 +1,118 @@
+#!/bin/bash
+
+# ClipPilot DMG ビルドスクリプト
+# このスクリプトは、ClipPilotをビルドして配布可能なDMGファイルを作成します。
+
+set -e
+
+# 色付き出力
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+echo -e "${GREEN}ClipPilot DMG ビルドスクリプト${NC}"
+echo "======================================"
+
+# 変数設定
+APP_NAME="ClipPilot"
+VERSION=${1:-"1.0.0"}
+BUILD_DIR=".build/release"
+APP_BUNDLE="${APP_NAME}.app"
+DMG_NAME="${APP_NAME}-${VERSION}.dmg"
+TEMP_DMG_DIR="temp-dmg"
+
+# クリーンアップ
+echo -e "\n${YELLOW}クリーンアップ中...${NC}"
+rm -rf "${APP_BUNDLE}"
+rm -rf "${TEMP_DMG_DIR}"
+rm -f "${DMG_NAME}"
+
+# リリースビルド
+echo -e "\n${YELLOW}リリースビルド中...${NC}"
+cd ClipPilot
+swift build -c release
+cd ..
+
+# .appバンドルの作成
+echo -e "\n${YELLOW}.appバンドル作成中...${NC}"
+mkdir -p "${APP_BUNDLE}/Contents/MacOS"
+mkdir -p "${APP_BUNDLE}/Contents/Resources"
+
+# バイナリをコピー
+cp "ClipPilot/${BUILD_DIR}/${APP_NAME}" "${APP_BUNDLE}/Contents/MacOS/"
+
+# Info.plistをコピー
+if [ -f "ClipPilot/Info.plist" ]; then
+    cp "ClipPilot/Info.plist" "${APP_BUNDLE}/Contents/"
+else
+    # Info.plistが存在しない場合は作成
+    cat > "${APP_BUNDLE}/Contents/Info.plist" << EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>en</string>
+    <key>CFBundleExecutable</key>
+    <string>${APP_NAME}</string>
+    <key>CFBundleIdentifier</key>
+    <string>com.clippilot.app</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundleName</key>
+    <string>${APP_NAME}</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleShortVersionString</key>
+    <string>${VERSION}</string>
+    <key>CFBundleVersion</key>
+    <string>1</string>
+    <key>LSMinimumSystemVersion</key>
+    <string>13.0</string>
+    <key>LSUIElement</key>
+    <true/>
+    <key>NSHighResolutionCapable</key>
+    <true/>
+</dict>
+</plist>
+EOF
+fi
+
+# リソースをコピー
+if [ -d "ClipPilot/Sources/Resources" ]; then
+    cp -r "ClipPilot/Sources/Resources/" "${APP_BUNDLE}/Contents/Resources/"
+fi
+
+# 実行権限を付与
+chmod +x "${APP_BUNDLE}/Contents/MacOS/${APP_NAME}"
+
+echo -e "${GREEN}✓ .appバンドル作成完了${NC}"
+
+# DMG作成
+echo -e "\n${YELLOW}DMG作成中...${NC}"
+
+# 一時ディレクトリを作成
+mkdir -p "${TEMP_DMG_DIR}"
+cp -r "${APP_BUNDLE}" "${TEMP_DMG_DIR}/"
+
+# Applicationsフォルダへのシンボリックリンクを作成
+ln -s /Applications "${TEMP_DMG_DIR}/Applications"
+
+# DMGを作成
+hdiutil create -volname "${APP_NAME}" \
+    -srcfolder "${TEMP_DMG_DIR}" \
+    -ov -format UDZO \
+    "${DMG_NAME}"
+
+# クリーンアップ
+rm -rf "${TEMP_DMG_DIR}"
+
+echo -e "\n${GREEN}=====================================${NC}"
+echo -e "${GREEN}✓ ビルド完了！${NC}"
+echo -e "${GREEN}DMGファイル: ${DMG_NAME}${NC}"
+echo -e "${GREEN}=====================================${NC}"
+
+# DMGサイズを表示
+DMG_SIZE=$(du -h "${DMG_NAME}" | cut -f1)
+echo -e "ファイルサイズ: ${DMG_SIZE}"
