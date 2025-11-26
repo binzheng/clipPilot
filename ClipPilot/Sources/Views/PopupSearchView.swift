@@ -48,24 +48,11 @@ struct PopupSearchView: View {
                     .buttonStyle(.plain)
                 }
 
-                Divider()
-                    .frame(height: 20)
-
                 // Type filter buttons
                 HStack(spacing: 4) {
-                    FilterButton(
-                        title: NSLocalizedString("favorites", comment: ""),
-                        icon: "star.fill",
-                        isSelected: showFavoritesOnly
-                    ) {
-                        showFavoritesOnly.toggle()
-                    }
-
-                    Divider()
-                        .frame(height: 20)
 
                     FilterButton(
-                        title: NSLocalizedString("all", comment: ""),
+                        title: "",
                         icon: "doc.on.doc",
                         isSelected: selectedType == nil && !showFavoritesOnly
                     ) {
@@ -74,7 +61,7 @@ struct PopupSearchView: View {
                     }
 
                     FilterButton(
-                        title: NSLocalizedString("text", comment: ""),
+                        title: "",
                         icon: "textformat",
                         isSelected: selectedType == .text
                     ) {
@@ -83,7 +70,7 @@ struct PopupSearchView: View {
                     }
 
                     FilterButton(
-                        title: NSLocalizedString("rtf", comment: ""),
+                        title: "",
                         icon: "doc.richtext",
                         isSelected: selectedType == .rtf
                     ) {
@@ -92,7 +79,7 @@ struct PopupSearchView: View {
                     }
 
                     FilterButton(
-                        title: NSLocalizedString("image", comment: ""),
+                        title: "",
                         icon: "photo",
                         isSelected: selectedType == .image
                     ) {
@@ -179,13 +166,8 @@ struct PopupSearchView: View {
                 .buttonStyle(.plain)
                 .foregroundColor(.red)
 
-                Button("Quit") {
+                Button(NSLocalizedString("Quit", comment: "")) {
                     NSApplication.shared.terminate(nil)
-                }
-                .buttonStyle(.plain)
-
-                Button(NSLocalizedString("close", comment: "")) {
-                    onClose()
                 }
                 .keyboardShortcut(.escape, modifiers: [])
             }

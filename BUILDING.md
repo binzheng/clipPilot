@@ -94,10 +94,134 @@ swift package update
 
 ## 配布用ビルド
 
-### リリースビルドの作成
+### アイコンの生成
+
+配布用のアプリアイコンとDMG背景画像を生成：
+
+```bash
+./scripts/create-icons.sh
+```
+
+このスクリプトは以下を生成します：
+- `ClipPilot/Resources/AppIcon.icns` - アプリケーションアイコン（全サイズ）
+- `dmg-resources/background.png` - DMG背景画像
+- `dmg-resources/background@2x.png` - Retina DMG背景画像
+
+#### 必要な依存関係
+
+```bash
+pip3 install Pillow
+```
+
+### 自動DMGビルド（推奨）
+
+配布用DMGファイルを自動的に作成：
+
+```bash
+./scripts/build-dmg.sh
+```
+
+このスクリプトは以下を実行します：
+1. リリースビルドの作成（最適化済み）
+2. .appバンドルの構築
+   - バイナリ、リソース、Info.plistのコピー
+   - CFBundleExecutable変数の解決
+   - アプリアイコンの統合
+3. コード署名（Hardened Runtime有効）
+4. DMGイメージの作成
+   - カスタム背景画像
+   - インストール用矢印とレイアウト
+   - Applicationsフォルダへのシンボリックリンク
+
+生成されるDMG：`ClipPilot-{version}.dmg`
+
+### 手動ビルドプロセス
+
+#### 1. リリースビルドの作成
 
 ```bash
 swift build -c release --arch arm64 --arch x86_64
+```
+
+#### 2. .appバンドルの構築
+
+```bash
+APP_NAME="ClipPilot"
+APP_BUNDLE="${APP_NAME}.app"
+
+mkdir -p "${APP_BUNDLE}/Contents/MacOS"
+mkdir -p "${APP_BUNDLE}/Contents/Resources"
+
+# バイナリをコピー
+cp ".build/release/${APP_NAME}" "${APP_BUNDLE}/Contents/MacOS/"
+
+# Info.plistをコピーして変数を置換
+sed "s/\$(EXECUTABLE_NAME)/${APP_NAME}/g" \
+  "ClipPilot/Info.plist" > "${APP_BUNDLE}/Contents/Info.plist"
+
+# アイコンをコピー
+cp "ClipPilot/Resources/AppIcon.icns" "${APP_BUNDLE}/Contents/Resources/"
+```
+
+#### 3. コード署名（Hardened Runtime）
+
+エンタイトルメント付きで署名：
+
+```bash
+codesign --force --deep --sign - \
+  --entitlements "ClipPilot/entitlements.plist" \
+  --options runtime \
+  "${APP_BUNDLE}"
+```
+
+アドホック署名（開発用）：
+
+```bash
+codesign --force --deep --sign - --options runtime "${APP_BUNDLE}"
+```
+
+プロダクション署名（Developer ID）：
+
+```bash
+codesign --deep --force --verify --verbose \
+  --sign "Developer ID Application: Your Name (TEAM_ID)" \
+  --entitlements "ClipPilot/entitlements.plist" \
+  --options runtime \
+  "${APP_BUNDLE}"
+```
+
+#### 4. 署名の検証
+
+```bash
+codesign --verify --verbose "${APP_BUNDLE}"
+codesign --display --verbose=4 "${APP_BUNDLE}"
+spctl --assess --verbose "${APP_BUNDLE}"
+```
+
+#### 5. DMGの作成
+
+```bash
+# 作業用DMGを作成
+hdiutil create -size 100m -fs HFS+ -volname "ClipPilot" \
+  -format UDRW temp.dmg
+
+# マウント
+hdiutil attach temp.dmg
+
+# ファイルをコピー
+cp -R "${APP_BUNDLE}" "/Volumes/ClipPilot/"
+ln -s /Applications "/Volumes/ClipPilot/Applications"
+
+# 背景画像を設定（オプション）
+mkdir "/Volumes/ClipPilot/.background"
+cp "dmg-resources/background.png" "/Volumes/ClipPilot/.background/"
+
+# アンマウント
+hdiutil detach "/Volumes/ClipPilot"
+
+# 圧縮して最終DMGを作成
+hdiutil convert temp.dmg -format UDZO -o "ClipPilot-1.0.3.dmg"
+rm temp.dmg
 ```
 
 ### Xcodeでアーカイブ
@@ -108,21 +232,6 @@ swift build -c release --arch arm64 --arch x86_64
 4. アーカイブを選択
 5. 「Distribute App」をクリック
 6. 配布方法を選択
-
-### 手動コード署名
-
-```bash
-codesign --deep --force --verify --verbose \
-  --sign "Developer ID Application: Your Name (TEAM_ID)" \
-  .build/release/ClipPilot
-```
-
-### 署名の検証
-
-```bash
-codesign --verify --verbose .build/release/ClipPilot
-spctl --assess --verbose .build/release/ClipPilot
-```
 
 ## 環境要件
 

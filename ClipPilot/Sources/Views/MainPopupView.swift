@@ -41,7 +41,7 @@ struct MainPopupView: View {
             }
             .padding(.horizontal, 8)
             .padding(.vertical, 8)
-            .background(Color(NSColor.controlBackgroundColor))
+            .background(Color(NSColor.windowBackgroundColor).opacity(0.95))
 
             Divider()
 
@@ -62,6 +62,7 @@ struct MainPopupView: View {
                 }
             }
         }
+        .background(Color(NSColor.windowBackgroundColor).opacity(0.95))
     }
 }
 

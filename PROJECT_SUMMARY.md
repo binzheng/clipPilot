@@ -1,8 +1,10 @@
 # ClipPilot - プロジェクトサマリー
 
+## バージョン 1.0.3
+
 ## 📦 プロジェクト完成！
 
-必要な全ての機能を備えた完全に機能するmacOSクリップボードマネージャーの実装が完了しました。
+必要な全ての機能を備えた完全に機能するmacOSクリップボードマネージャーの実装が完了しました。プロフェッショナルなアイコン、DMGインストーラー、透明感のあるモダンなUIを備えています。
 
 ## ✅ 完成した機能
 
@@ -19,9 +21,14 @@
 ### ユーザーインターフェース
 - ✅ フィルタリング機能付きポップアップ検索ウィンドウ
 - ✅ 最近のアイテム表示付きメニューバー統合
+- ✅ 履歴とお気に入りのタブ切り替え
+- ✅ 透明感のあるNSPopover（95%不透明度）
+- ✅ 統一された背景色デザイン
+- ✅ プロフェッショナルなアプリアイコン
 - ✅ 4つのタブを持つ設定ウィンドウ
 - ✅ クリップボードアイテム用コンテキストメニュー
 - ✅ ピン留めアイテムの視覚的フィードバック
+- ✅ Launchpadサポート
 
 ### 設定
 - ✅ 最大履歴アイテム数（デフォルト500）
@@ -47,9 +54,18 @@
 - ✅ パフォーマンスベンチマーク
 - ✅ 全テストが合格
 
+### 配布とパッケージング
+- ✅ 自動DMGビルドスクリプト
+- ✅ アイコン生成スクリプト（Pillow使用）
+- ✅ カスタム背景画像付きDMGインストーラー
+- ✅ Hardened Runtime付きコード署名
+- ✅ エンタイトルメント設定
+- ✅ GitHub Releases対応
+
 ### ドキュメント
 - ✅ 詳細なREADME.md
 - ✅ ビルドガイド（BUILDING.md）
+- ✅ プロジェクトサマリー（PROJECT_SUMMARY.md）
 - ✅ ライセンス（MIT）
 - ✅ .gitignore設定
 
@@ -59,26 +75,37 @@
 clipPilot/
 ├── README.md                    # メインドキュメント
 ├── BUILDING.md                  # ビルド手順
+├── PROJECT_SUMMARY.md          # このファイル
 ├── LICENSE                      # MITライセンス
 ├── .gitignore                   # Git除外ルール
-├── PROJECT_SUMMARY.md          # このファイル
+├── scripts/
+│   ├── build-dmg.sh            # 自動DMGビルドスクリプト
+│   └── create-icons.sh         # アイコン生成スクリプト
+├── dmg-resources/
+│   ├── background.png          # DMG背景画像
+│   └── background@2x.png       # DMG背景画像（Retina）
 └── ClipPilot/
     ├── Package.swift           # Swift Package Manager設定
+    ├── Info.plist              # バンドル設定
     ├── entitlements.plist      # アプリ権限
     ├── Sources/
     │   ├── App/
-    │   │   ├── ClipPilotApp.swift      # SwiftUIアプリエントリー
+    │   │   ├── ClipPilotApp.swift       # SwiftUIアプリエントリー
     │   │   └── AppDelegate.swift        # AppKitライフサイクル
     │   ├── Core/
     │   │   ├── ClipboardMonitor.swift   # クリップボードポーリング（300ms）
     │   │   ├── GlobalHotkeyManager.swift # Carbon hotkey API
-    │   │   └── PasteService.swift       # CGEventペーストシミュレーション
+    │   │   ├── PasteService.swift       # CGEventペーストシミュレーション
+    │   │   ├── EnergyManager.swift      # バッテリー最適化
+    │   │   └── AppLogger.swift          # ログシステム
     │   ├── Models/
     │   │   ├── ClipboardItem.swift      # Core Dataエンティティ
     │   │   └── HistoryStore.swift       # Core Data操作
     │   ├── Views/
     │   │   ├── PopupWindow.swift        # フローティングウィンドウ
-    │   │   ├── PopupSearchView.swift    # 検索UI
+    │   │   ├── MainPopupView.swift      # タブ付きメインビュー
+    │   │   ├── PopupSearchView.swift    # 履歴検索UI
+    │   │   ├── FavoritesView.swift      # お気に入りUI
     │   │   ├── HistoryItemRow.swift     # リストアイテムビュー
     │   │   ├── MenuBarController.swift  # ステータスバーメニュー
     │   │   └── SettingsView.swift       # 設定UI
@@ -86,6 +113,7 @@ clipPilot/
     │   │   ├── Constants.swift          # アプリ定数
     │   │   └── Preferences.swift        # UserDefaultsラッパー
     │   └── Resources/
+    │       ├── AppIcon.icns            # アプリアイコン
     │       ├── en.lproj/
     │       │   └── Localizable.strings  # 英語文字列
     │       └── ja.lproj/
@@ -159,20 +187,31 @@ open Package.swift
 
 ### グローバルホットキー
 - Carbon Event Manager統合
-- デフォルト：⌥⌘V（Option+Command+V）
+- ⌥⌘V（Option+Command+V）：履歴ポップアップを開く
+- ⌥⌘F（Option+Command+F）：お気に入りポップアップを開く
 - コールバックサポート付きイベントハンドラー
 - アプリ終了時の適切なクリーンアップ
+
+### UI/UXの詳細
+- NSPopoverとPopupWindowの両方をサポート
+- メニューバーからポップオーバー表示
+- ホットキーでフローティングウィンドウ表示
+- 透明な背景（95%不透明度）で統一感のあるデザイン
+- 履歴とお気に入りタブの切り替え
+- プロフェッショナルなクリップボードアイコン
 
 ## 🎯 使用例
 
 ### 基本的な使い方
 1. 通常通りテキストや画像をコピー
-2. ⌥⌘V を押してClipPilotを開く
-3. 履歴を検索または参照
-4. アイテムをクリックしてペースト
+2. ⌥⌘V を押してClipPilot履歴を開く
+3. ⌥⌘F を押してお気に入りを開く
+4. 履歴を検索または参照
+5. アイテムをクリックしてペースト
 
 ### 高度な機能
 - **アイテムをピン留め**：右クリック → ピン留め
+- **タブ切り替え**：履歴タブとお気に入りタブを切り替え
 - **検索**：検索バーに入力
 - **フィルタ**：テキスト/RTF/画像ボタンをクリック
 - **クリア**：メニューバー → 履歴をクリア
@@ -239,7 +278,6 @@ thumbnailSize: 64px             // プレビューサムネイルサイズ
 2. **ポーリングベース**：プッシュ通知ではなくポーリング（300ms）を使用
 3. **合成イベント**：一部のアプリがCGEventベースのペーストをブロックする可能性
 4. **RTFはテキストのみ**：RTFはプレビューでプレーンテキストとして表示
-5. **Dockアイコンなし**：メニューバーのみ（LSUIElement = true）
 
 ## 🔒 プライバシーとセキュリティ
 
@@ -291,11 +329,12 @@ thumbnailSize: 64px             // プレビューサムネイルサイズ
 3. アクセシビリティ権限を付与
 4. 使い始める！
 
-### 配布用
-1. Developer IDでコード署名
-2. Appleで公証
-3. DMGインストーラーを作成
-4. ユーザーに配布
+### 配布用DMGの作成
+1. アイコンを生成：`./scripts/create-icons.sh`
+2. DMGをビルド：`./scripts/build-dmg.sh`
+3. 生成されたDMGをテスト：`ClipPilot-1.0.3.dmg`
+4. GitHub Releasesでリリース
+5. オプション：Developer IDで署名して公証
 
 ### オプションの機能拡張
 - iCloud同期（CloudKit）

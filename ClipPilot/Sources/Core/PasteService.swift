@@ -9,7 +9,7 @@ class PasteService {
     private init() {}
 
     func paste(item: ClipboardItem) {
-        // Clear and set new content
+        // Copy to clipboard without automatic paste
         let pasteboard = NSPasteboard.general
         pasteboard.clearContents()
 
@@ -36,40 +36,7 @@ class PasteService {
             }
         }
 
-        // Wait a bit for clipboard to update
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            self.sendPasteCommand()
-        }
-    }
-
-    private func sendPasteCommand() {
-        // Check accessibility permission
-        let trusted = AXIsProcessTrusted()
-        guard trusted else {
-            logger.warning("Accessibility permission not granted")
-            return
-        }
-
-        // Verify frontmost application exists
-        guard NSWorkspace.shared.frontmostApplication != nil else {
-            return
-        }
-
-        // Send Cmd+V
-        let source = CGEventSource(stateID: .combinedSessionState)
-
-        // Key down: V with Command modifier
-        let vKeyDown = CGEvent(keyboardEventSource: source, virtualKey: 0x09, keyDown: true)
-        vKeyDown?.flags = .maskCommand
-
-        // Key up: V
-        let vKeyUp = CGEvent(keyboardEventSource: source, virtualKey: 0x09, keyDown: false)
-        vKeyUp?.flags = .maskCommand
-
-        // Post events
-        vKeyDown?.post(tap: .cghidEventTap)
-        usleep(10000) // 10ms
-        vKeyUp?.post(tap: .cghidEventTap)
+        logger.info("Item copied to clipboard")
     }
 
     func copyToClipboard(item: ClipboardItem) {

@@ -32,6 +32,28 @@
 - Note any permissions/UI flows touched (Accessibility prompts, login item toggle) and list the tests you ran (`swift test`, manual scenarios).
 
 ## Release Packaging (DMG)
+
+### Automated Build (Recommended)
+The project includes automated scripts for creating distribution-ready DMG files:
+
+1. **Generate app icon and DMG background:**
+   ```bash
+   ./scripts/create-icons.sh
+   ```
+   This creates `ClipPilot/Resources/AppIcon.icns` and DMG background images in `dmg-resources/`.
+
+2. **Build DMG with automated script:**
+   ```bash
+   ./scripts/build-dmg.sh
+   ```
+   This script:
+   - Builds release version with Swift Package Manager
+   - Creates .app bundle with proper Info.plist
+   - Code signs with entitlements and Hardened Runtime
+   - Creates DMG with custom background and layout
+   - Output: `ClipPilot-{version}.dmg`
+
+### Manual Build Process (Advanced)
 - Release archive: `cd ClipPilot && xcodebuild -scheme ClipPilot -configuration Release archive -archivePath build/ClipPilot.xcarchive`.
 - Export app: create `exportOptions.plist` for your team, then run `xcodebuild -exportArchive -archivePath build/ClipPilot.xcarchive -exportPath build -exportOptionsPlist exportOptions.plist` to get `build/ClipPilot.app`.
 - Create DMG: `hdiutil create -volname "ClipPilot" -srcfolder build/ClipPilot.app -ov -format UDZO build/ClipPilot.dmg`.

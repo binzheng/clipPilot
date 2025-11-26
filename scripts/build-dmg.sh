@@ -61,6 +61,8 @@ else
     <string>com.clippilot.app</string>
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
+    <key>CFBundleIconFile</key>
+    <string>AppIcon</string>
     <key>CFBundleName</key>
     <string>${APP_NAME}</string>
     <key>CFBundlePackageType</key>
@@ -87,6 +89,12 @@ fi
 # リソースをコピー
 if [ -d "ClipPilot/Sources/Resources" ]; then
     cp -r "ClipPilot/Sources/Resources/" "${APP_BUNDLE}/Contents/Resources/"
+fi
+
+# アプリアイコンをコピー
+if [ -f "ClipPilot/Resources/AppIcon.icns" ]; then
+    cp "ClipPilot/Resources/AppIcon.icns" "${APP_BUNDLE}/Contents/Resources/"
+    echo -e "${GREEN}✓ アプリアイコンを追加${NC}"
 fi
 
 # 実行権限を付与
@@ -116,6 +124,13 @@ cp -r "${APP_BUNDLE}" "${TEMP_DMG_DIR}/"
 # Applicationsフォルダへのシンボリックリンクを作成
 ln -s /Applications "${TEMP_DMG_DIR}/Applications"
 
+# 背景画像をコピー
+if [ -f "dmg-resources/background.png" ]; then
+    mkdir -p "${TEMP_DMG_DIR}/.background"
+    cp "dmg-resources/background.png" "${TEMP_DMG_DIR}/.background/"
+    echo -e "${GREEN}✓ DMG背景画像を追加${NC}"
+fi
+
 # 読み書き可能なDMGを一時的に作成
 TEMP_DMG="temp-${DMG_NAME}"
 hdiutil create -volname "${APP_NAME}" \
@@ -130,6 +145,9 @@ hdiutil attach "${TEMP_DMG}" -readwrite -noverify -noautoopen
 
 # AppleScriptでウィンドウレイアウトを設定
 sleep 2
+# 背景画像パスを設定
+BG_FILE="${MOUNT_DIR}/.background/background.png"
+
 osascript <<EOF
 tell application "Finder"
     tell disk "${APP_NAME}"
@@ -140,7 +158,10 @@ tell application "Finder"
         set the bounds of container window to {400, 100, 920, 480}
         set viewOptions to the icon view options of container window
         set arrangement of viewOptions to not arranged
-        set icon size of viewOptions to 72
+        set icon size of viewOptions to 96
+        try
+            set background picture of viewOptions to POSIX file "${BG_FILE}"
+        end try
         set position of item "${APP_BUNDLE}" of container window to {140, 180}
         set position of item "Applications" of container window to {380, 180}
         close
